@@ -11,7 +11,7 @@ import {
   Platform, StyleSheet, Text, View,
 } from 'react-native';
 
-import './src/config/ReactotronConfig';
+import '~/config/ReactotronConfig';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
