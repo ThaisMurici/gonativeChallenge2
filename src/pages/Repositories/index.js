@@ -64,7 +64,14 @@ export default class Repositories extends Component {
     }
   };
 
-  renderListItem = ({ item }) => <ListItem repository={item} />;
+  showIssues = (repository) => {
+    const { navigation } = this.props;
+    navigation.navigate('Issues', { repository });
+  }
+
+  renderListItem = ({ item }) => (
+    <ListItem repository={item} onPress={() => this.showIssues(item)} />
+  );
 
   render() {
     const { repositoriesList, test } = this.state;

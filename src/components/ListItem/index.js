@@ -8,8 +8,8 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from './styles';
 
-const ListItem = ({ repository }) => (
-  <TouchableOpacity style={styles.container} onPress={() => {}}>
+const ListItem = ({ repository, onPress }) => (
+  <TouchableOpacity style={styles.container} onPress={onPress}>
     <Image style={styles.avatar} source={{ uri: repository.avatar }} />
     <View style={styles.info}>
       <Text style={styles.name}>{repository.name}</Text>
@@ -26,6 +26,7 @@ ListItem.propTypes = {
     name: PropTypes.string,
     organization: PropTypes.string,
   }).isRequired,
+  onPress: PropTypes.func.isRequired,
 };
 
 export default ListItem;
