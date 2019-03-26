@@ -2,10 +2,10 @@ import React from 'react';
 
 import { Text, View } from 'react-native';
 
-// import styles from './styles';
+import styles from './styles';
 
 const Repositories = () => (
-  <View>
+  <View style={styles.container}>
     <Text>Repositories</Text>
   </View>
 );
