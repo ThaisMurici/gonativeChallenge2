@@ -9,7 +9,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   search: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'stretch',
   },
