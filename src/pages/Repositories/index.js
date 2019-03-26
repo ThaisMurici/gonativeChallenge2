@@ -31,21 +31,37 @@ export default class Repositories extends Component {
     }
   };
 
+  repositoryExists = (requestedRepository, savedRepositories) => {
+    const requestedData = requestedRepository.split('/');
+    const repositoryExists = savedRepositories.filter(
+      item => (
+        item.organization.toLowerCase() === requestedData[0]
+        && item.name.toLowerCase() === requestedData[1]
+      ),
+    );
+    return repositoryExists;
+  }
+
   addRepository = async () => {
     const { repository, repositoriesList, reRenderListTrigger } = this.state;
 
-    try {
-      const { data } = await api.get(`/repos/${repository}`);
-      repositoriesList.push({
-        id: data.id,
-        name: data.name,
-        organization: data.owner.login,
-        avatar: data.owner.avatar_url,
-      });
+    const savedRepositories = await AsyncStorage.getItem('@GitIssues:repositoriesList');
+    const parsedList = JSON.parse(savedRepositories);
 
-      await AsyncStorage.setItem('@GitIssues:repositoriesList', JSON.stringify(repositoriesList));
-      this.setState({ repositoriesList, reRenderListTrigger: !reRenderListTrigger });
-    } catch (error) {}
+    if (savedRepositories && !this.repositoryExists(repository, parsedList)) {
+      try {
+        const { data } = await api.get(`/repos/${repository}`);
+        repositoriesList.push({
+          id: data.id,
+          name: data.name,
+          organization: data.owner.login,
+          avatar: data.owner.avatar_url,
+        });
+
+        await AsyncStorage.setItem('@GitIssues:repositoriesList', JSON.stringify(repositoriesList));
+        this.setState({ repositoriesList, reRenderListTrigger: !reRenderListTrigger });
+      } catch (error) {}
+    }
   };
 
   renderListItem = ({ item }) => <ListItem repository={item} />;
