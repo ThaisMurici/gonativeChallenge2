@@ -14,7 +14,9 @@ const ListItem = ({
   <TouchableOpacity style={styles.container} onPress={onPress}>
     <Image style={styles.avatar} source={{ uri: avatar }} />
     <View style={styles.info}>
-      <Text style={styles.name}>{title}</Text>
+      <Text style={styles.name} numberOfLines={1}>
+        {title}
+      </Text>
       <Text style={styles.organization}>{author}</Text>
     </View>
 
