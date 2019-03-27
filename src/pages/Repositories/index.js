@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 
 import {
-  View, TextInput, TouchableOpacity, AsyncStorage, FlatList,
+  View,
+  TextInput,
+  TouchableOpacity,
+  AsyncStorage,
+  FlatList,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -18,6 +23,8 @@ export default class Repositories extends Component {
     repositoriesList: [],
     repository: '',
     reRenderListTrigger: false,
+    loading: true,
+    refreshing: false,
   };
 
   componentDidMount() {
@@ -25,22 +32,25 @@ export default class Repositories extends Component {
   }
 
   loadSavedRepositories = async () => {
+    this.setState({ refreshing: true });
     const savedRepositories = await AsyncStorage.getItem('@GitIssues:repositoriesList');
     if (savedRepositories) {
-      this.setState({ repositoriesList: JSON.parse(savedRepositories) });
+      this.setState({
+        repositoriesList: JSON.parse(savedRepositories) || [],
+        loading: false,
+        refreshing: false,
+      });
     }
   };
 
   repositoryExists = (requestedRepository, savedRepositories) => {
     const requestedData = requestedRepository.split('/');
     const repositoryExists = savedRepositories.filter(
-      item => (
-        item.organization.toLowerCase() === requestedData[0].toLowerCase()
-        && item.name.toLowerCase() === requestedData[1].toLowerCase()
-      ),
+      item => item.organization.toLowerCase() === requestedData[0].toLowerCase()
+        && item.name.toLowerCase() === requestedData[1].toLowerCase(),
     );
     return repositoryExists.length > 0;
-  }
+  };
 
   addRepository = async () => {
     const { repository, repositoriesList, reRenderListTrigger } = this.state;
@@ -67,7 +77,7 @@ export default class Repositories extends Component {
   showIssues = (repository) => {
     const { navigation } = this.props;
     navigation.navigate('Issues', { repository });
-  }
+  };
 
   renderListItem = ({ item }) => (
     <ListItem
@@ -78,8 +88,22 @@ export default class Repositories extends Component {
     />
   );
 
+  renderList = () => {
+    const { repositoriesList, reRenderListTrigger, refreshing } = this.state;
+    return (
+      <FlatList
+        data={repositoriesList}
+        keyExtractor={item => String(item.id)}
+        renderItem={this.renderListItem}
+        onRefresh={this.loadSavedRepositories}
+        refreshing={refreshing}
+        extraData={reRenderListTrigger}
+      />
+    );
+  };
+
   render() {
-    const { repositoriesList, reRenderListTrigger } = this.state;
+    const { loading } = this.state;
     return (
       <View style={styles.container}>
         <View style={styles.search}>
@@ -96,12 +120,7 @@ export default class Repositories extends Component {
           </TouchableOpacity>
         </View>
 
-        <FlatList
-          data={repositoriesList}
-          keyExtractor={item => String(item.id)}
-          renderItem={this.renderListItem}
-          extraData={reRenderListTrigger}
-        />
+        {loading ? <ActivityIndicator style={styles.loading} /> : this.renderList()}
       </View>
     );
   }

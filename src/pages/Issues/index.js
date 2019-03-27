@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import api from '~/services/api';
 
 import {
-  Text, View, TouchableOpacity, FlatList,
+  Text, View, TouchableOpacity, FlatList, ActivityIndicator,
 } from 'react-native';
 
 import styles from './styles';
@@ -18,6 +18,8 @@ export default class Issues extends Component {
     filteredIssues: [],
     currentTab: 'All',
     reRenderListTrigger: false,
+    loading: true,
+    refreshing: false,
   };
 
   componentDidMount() {
@@ -25,13 +27,12 @@ export default class Issues extends Component {
   }
 
   loadIssues = async () => {
+    this.setState({ refreshing: true });
     const { navigation } = this.props;
     const repository = navigation.getParam('repository', '');
     const { data } = await api.get(`/repos/${repository.organization}/${repository.name}/issues?state=all`);
-    this.setState({ issues: data, filteredIssues: data });
+    this.setState({ issues: data, filteredIssues: data, loading: false, refreshing: false });
   }
-
-  filterIssues = () => {}
 
   tabPressed = (tab) => {
     const { issues, reRenderListTrigger } = this.state;
@@ -39,14 +40,26 @@ export default class Issues extends Component {
     switch (tab) {
       case 'Open':
         filteredIssues = issues.filter(item => item.state === 'open');
-        this.setState({ currentTab: tab, filteredIssues, reRenderListTrigger: !reRenderListTrigger });
+        this.setState({
+          currentTab: tab,
+          filteredIssues,
+          reRenderListTrigger: !reRenderListTrigger,
+        });
         break;
       case 'Closed':
         filteredIssues = issues.filter(item => item.state === 'closed');
-        this.setState({ currentTab: tab, filteredIssues, reRenderListTrigger: !reRenderListTrigger });
+        this.setState({
+          currentTab: tab,
+          filteredIssues,
+          reRenderListTrigger: !reRenderListTrigger,
+        });
         break;
       default:
-        this.setState({ currentTab: tab, filteredIssues: issues, reRenderListTrigger: !reRenderListTrigger });
+        this.setState({
+          currentTab: tab,
+          filteredIssues: issues,
+          reRenderListTrigger: !reRenderListTrigger,
+        });
         break;
     }
   }
@@ -72,8 +85,22 @@ export default class Issues extends Component {
     />
   );
 
+  renderList = () => {
+    const { filteredIssues, reRenderListTrigger, refreshing } = this.state;
+    return (
+      <FlatList
+        data={filteredIssues}
+        keyExtractor={item => String(item.id)}
+        renderItem={this.renderListItem}
+        extraData={reRenderListTrigger}
+        onRefresh={this.loadIssues}
+        refreshing={refreshing}
+      />
+    );
+  }
+
   render() {
-    const { filteredIssues, reRenderListTrigger } = this.state;
+    const { loading } = this.state;
     return (
       <View style={styles.container}>
         <View style={styles.tabBar}>
@@ -91,12 +118,7 @@ export default class Issues extends Component {
           </TouchableOpacity>
         </View>
 
-        <FlatList
-          data={filteredIssues}
-          keyExtractor={item => String(item.id)}
-          renderItem={this.renderListItem}
-          extraData={reRenderListTrigger}
-        />
+        {loading ? <ActivityIndicator style={styles.loading} /> : this.renderList()}
       </View>
     );
   }

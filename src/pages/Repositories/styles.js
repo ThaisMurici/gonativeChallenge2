@@ -6,7 +6,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.light,
     padding: metrics.basePadding,
-    justifyContent: 'center',
   },
   search: {
     flexDirection: 'row',
