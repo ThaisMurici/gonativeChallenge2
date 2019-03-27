@@ -39,6 +39,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.dark,
   },
+  empty: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyIcon: {
+    fontSize: 40,
+    marginBottom: metrics.baseMargin * 2,
+  },
 });
 
 export default styles;

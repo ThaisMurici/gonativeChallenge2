@@ -56,6 +56,11 @@ export default class Repositories extends Component {
         loading: false,
         refreshing: false,
       });
+    } else {
+      this.setState({
+        loading: false,
+        refreshing: false,
+      });
     }
   };
 
@@ -115,7 +120,7 @@ export default class Repositories extends Component {
 
   renderList = () => {
     const { repositoriesList, reRenderListTrigger, refreshing } = this.state;
-    return (
+    return repositoriesList.length > 0 ? (
       <FlatList
         data={repositoriesList}
         keyExtractor={item => String(item.id)}
@@ -124,6 +129,11 @@ export default class Repositories extends Component {
         refreshing={refreshing}
         extraData={reRenderListTrigger}
       />
+    ) : (
+      <View style={styles.empty}>
+        <Icon style={styles.emptyIcon} name="search" />
+        <Text>Add some repositories to your list!</Text>
+      </View>
     );
   };
 

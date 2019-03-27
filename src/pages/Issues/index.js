@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import api from '~/services/api';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import {
   Text, View, TouchableOpacity, FlatList, ActivityIndicator, Linking,
@@ -103,7 +104,7 @@ export default class Issues extends Component {
 
   renderList = () => {
     const { filteredIssues, reRenderListTrigger, refreshing } = this.state;
-    return (
+    return (filteredIssues.length > 0 ? (
       <FlatList
         data={filteredIssues}
         keyExtractor={item => String(item.id)}
@@ -112,7 +113,12 @@ export default class Issues extends Component {
         onRefresh={this.loadIssues}
         refreshing={refreshing}
       />
-    );
+    ) : (
+      <View style={styles.empty}>
+        <Icon style={styles.emptyIcon} name="exclamation" />
+        <Text>No issues here!</Text>
+      </View>
+    ));
   }
 
   render() {
