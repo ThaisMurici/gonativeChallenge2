@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import api from '~/services/api';
 
 import {
@@ -11,6 +12,12 @@ import ListItem from '~/components/ListItem';
 export default class Issues extends Component {
   static navigationOptions = {
     title: 'Issues',
+  };
+
+  static propTypes = {
+    navigation: PropTypes.shape({
+      navigate: PropTypes.func,
+    }).isRequired,
   };
 
   state = {

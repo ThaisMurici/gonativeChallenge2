@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import {
   View,
@@ -17,6 +18,12 @@ import ListItem from '~/components/ListItem';
 export default class Repositories extends Component {
   static navigationOptions = {
     title: 'Repositories',
+  };
+
+  static propTypes = {
+    navigation: PropTypes.shape({
+      navigate: PropTypes.func,
+    }).isRequired,
   };
 
   state = {
