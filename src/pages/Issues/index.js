@@ -38,7 +38,12 @@ export default class Issues extends Component {
     const { navigation } = this.props;
     const repository = navigation.getParam('repository', '');
     const { data } = await api.get(`/repos/${repository.organization}/${repository.name}/issues?state=all`);
-    this.setState({ issues: data, filteredIssues: data, loading: false, refreshing: false });
+    this.setState({
+      issues: data,
+      filteredIssues: data,
+      loading: false,
+      refreshing: false,
+    });
   }
 
   tabPressed = (tab) => {
@@ -84,7 +89,7 @@ export default class Issues extends Component {
   };
 
   openIssueInBrowser = (url) => {
-    Linking.openURL(url).catch((err) => {});
+    Linking.openURL(url).catch(() => {});
   }
 
   renderListItem = ({ item }) => (

@@ -27,6 +27,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.sucess,
     borderRadius: metrics.baseRadius,
   },
+  errorContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: metrics.baseMargin,
+    height: 30,
+    backgroundColor: colors.danger,
+    borderRadius: metrics.baseRadius,
+  },
+  errorText: {
+    fontWeight: 'bold',
+    color: colors.white,
+  },
 });
 
 export default styles;

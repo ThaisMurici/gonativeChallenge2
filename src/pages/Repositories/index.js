@@ -8,6 +8,7 @@ import {
   AsyncStorage,
   FlatList,
   ActivityIndicator,
+  Text,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -32,10 +33,18 @@ export default class Repositories extends Component {
     reRenderListTrigger: false,
     loading: true,
     refreshing: false,
+    error: '',
   };
 
   componentDidMount() {
     this.loadSavedRepositories();
+  }
+
+  componentDidUpdate() {
+    const { error } = this.state;
+    if (error) {
+      setTimeout(() => this.setState({ error: '' }), 2000);
+    }
   }
 
   loadSavedRepositories = async () => {
@@ -62,6 +71,11 @@ export default class Repositories extends Component {
   addRepository = async () => {
     const { repository, repositoriesList, reRenderListTrigger } = this.state;
 
+    if (!repository) {
+      this.setState({ error: 'Search term is empty!' });
+      return;
+    }
+
     const savedRepositories = await AsyncStorage.getItem('@GitIssues:repositoriesList');
     const parsedList = savedRepositories ? JSON.parse(savedRepositories) : [];
 
@@ -77,7 +91,11 @@ export default class Repositories extends Component {
 
         await AsyncStorage.setItem('@GitIssues:repositoriesList', JSON.stringify(repositoriesList));
         this.setState({ repositoriesList, reRenderListTrigger: !reRenderListTrigger });
-      } catch (error) {}
+      } catch (error) {
+        this.setState({ error: 'Repository not found.' });
+      }
+    } else {
+      this.setState({ error: 'Repository already added.' });
     }
   };
 
@@ -110,7 +128,7 @@ export default class Repositories extends Component {
   };
 
   render() {
-    const { loading } = this.state;
+    const { loading, error } = this.state;
     return (
       <View style={styles.container}>
         <View style={styles.search}>
@@ -127,6 +145,11 @@ export default class Repositories extends Component {
           </TouchableOpacity>
         </View>
 
+        {error ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        ) : null}
         {loading ? <ActivityIndicator style={styles.loading} /> : this.renderList()}
       </View>
     );
