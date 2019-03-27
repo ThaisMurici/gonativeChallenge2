@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import api from '~/services/api';
 
 import {
-  Text, View, TouchableOpacity, FlatList, ActivityIndicator,
+  Text, View, TouchableOpacity, FlatList, ActivityIndicator, Linking,
 } from 'react-native';
 
 import styles from './styles';
@@ -76,12 +76,16 @@ export default class Issues extends Component {
     return style;
   };
 
+  openIssueInBrowser = (url) => {
+    Linking.openURL(url).catch((err) => {});
+  }
+
   renderListItem = ({ item }) => (
     <ListItem
       title={item.title}
       avatar={item.user.avatar_url}
       author={item.user.login}
-      onPress={() => {}}
+      onPress={() => this.openIssueInBrowser(item.html_url)}
     />
   );
 
