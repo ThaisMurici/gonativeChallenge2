@@ -8,12 +8,14 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from './styles';
 
-const ListItem = ({ repository, onPress }) => (
+const ListItem = ({
+  avatar, title, author, onPress,
+}) => (
   <TouchableOpacity style={styles.container} onPress={onPress}>
-    <Image style={styles.avatar} source={{ uri: repository.avatar }} />
+    <Image style={styles.avatar} source={{ uri: avatar }} />
     <View style={styles.info}>
-      <Text style={styles.name}>{repository.name}</Text>
-      <Text style={styles.organization}>{repository.organization}</Text>
+      <Text style={styles.name}>{title}</Text>
+      <Text style={styles.organization}>{author}</Text>
     </View>
 
     <Icon name="chevron-right" style={styles.icon} />
@@ -21,11 +23,9 @@ const ListItem = ({ repository, onPress }) => (
 );
 
 ListItem.propTypes = {
-  repository: PropTypes.shape({
-    avatar: PropTypes.string,
-    name: PropTypes.string,
-    organization: PropTypes.string,
-  }).isRequired,
+  avatar: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  author: PropTypes.string.isRequired,
   onPress: PropTypes.func.isRequired,
 };
 

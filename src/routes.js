@@ -12,7 +12,7 @@ const Routes = createAppContainer(
       Issues,
     },
     {
-      initialRouteName: 'Issues',
+      initialRouteName: 'Repositories',
       defaultNavigationOptions: {
         headerStyle: {
           backgroundColor: colors.white,

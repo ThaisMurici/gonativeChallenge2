@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
+import api from '~/services/api';
 
-import { Text, View, TouchableOpacity } from 'react-native';
+import {
+  Text, View, TouchableOpacity, FlatList,
+} from 'react-native';
 
 import styles from './styles';
+import ListItem from '~/components/ListItem';
 
 export default class Issues extends Component {
   static navigationOptions = {
@@ -10,10 +14,42 @@ export default class Issues extends Component {
   };
 
   state = {
+    issues: [],
+    filteredIssues: [],
     currentTab: 'All',
+    reRenderListTrigger: false,
   };
 
-  tabPressed = tab => this.setState({ currentTab: tab });
+  componentDidMount() {
+    this.loadIssues();
+  }
+
+  loadIssues = async () => {
+    const { navigation } = this.props;
+    const repository = navigation.getParam('repository', '');
+    const { data } = await api.get(`/repos/${repository.organization}/${repository.name}/issues?state=all`);
+    this.setState({ issues: data, filteredIssues: data });
+  }
+
+  filterIssues = () => {}
+
+  tabPressed = (tab) => {
+    const { issues, reRenderListTrigger } = this.state;
+    let filteredIssues = [];
+    switch (tab) {
+      case 'Open':
+        filteredIssues = issues.filter(item => item.state === 'open');
+        this.setState({ currentTab: tab, filteredIssues, reRenderListTrigger: !reRenderListTrigger });
+        break;
+      case 'Closed':
+        filteredIssues = issues.filter(item => item.state === 'closed');
+        this.setState({ currentTab: tab, filteredIssues, reRenderListTrigger: !reRenderListTrigger });
+        break;
+      default:
+        this.setState({ currentTab: tab, filteredIssues: issues, reRenderListTrigger: !reRenderListTrigger });
+        break;
+    }
+  }
 
   tabStyle = (tab) => {
     const { currentTab } = this.state;
@@ -27,7 +63,17 @@ export default class Issues extends Component {
     return style;
   };
 
+  renderListItem = ({ item }) => (
+    <ListItem
+      title={item.title}
+      avatar={item.user.avatar_url}
+      author={item.user.login}
+      onPress={() => {}}
+    />
+  );
+
   render() {
+    const { filteredIssues, reRenderListTrigger } = this.state;
     return (
       <View style={styles.container}>
         <View style={styles.tabBar}>
@@ -44,6 +90,13 @@ export default class Issues extends Component {
             <Text style={this.textStyle('Closed')}>Closed</Text>
           </TouchableOpacity>
         </View>
+
+        <FlatList
+          data={filteredIssues}
+          keyExtractor={item => String(item.id)}
+          renderItem={this.renderListItem}
+          extraData={reRenderListTrigger}
+        />
       </View>
     );
   }

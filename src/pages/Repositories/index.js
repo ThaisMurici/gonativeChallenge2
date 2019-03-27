@@ -35,20 +35,20 @@ export default class Repositories extends Component {
     const requestedData = requestedRepository.split('/');
     const repositoryExists = savedRepositories.filter(
       item => (
-        item.organization.toLowerCase() === requestedData[0]
-        && item.name.toLowerCase() === requestedData[1]
+        item.organization.toLowerCase() === requestedData[0].toLowerCase()
+        && item.name.toLowerCase() === requestedData[1].toLowerCase()
       ),
     );
-    return repositoryExists;
+    return repositoryExists.length > 0;
   }
 
   addRepository = async () => {
     const { repository, repositoriesList, reRenderListTrigger } = this.state;
 
     const savedRepositories = await AsyncStorage.getItem('@GitIssues:repositoriesList');
-    const parsedList = JSON.parse(savedRepositories);
+    const parsedList = savedRepositories ? JSON.parse(savedRepositories) : [];
 
-    if (savedRepositories && !this.repositoryExists(repository, parsedList)) {
+    if (!savedRepositories || !this.repositoryExists(repository, parsedList)) {
       try {
         const { data } = await api.get(`/repos/${repository}`);
         repositoriesList.push({
@@ -70,11 +70,16 @@ export default class Repositories extends Component {
   }
 
   renderListItem = ({ item }) => (
-    <ListItem repository={item} onPress={() => this.showIssues(item)} />
+    <ListItem
+      title={item.name}
+      avatar={item.avatar}
+      author={item.organization}
+      onPress={() => this.showIssues(item)}
+    />
   );
 
   render() {
-    const { repositoriesList, test } = this.state;
+    const { repositoriesList, reRenderListTrigger } = this.state;
     return (
       <View style={styles.container}>
         <View style={styles.search}>
@@ -95,7 +100,7 @@ export default class Repositories extends Component {
           data={repositoriesList}
           keyExtractor={item => String(item.id)}
           renderItem={this.renderListItem}
-          extraData={test}
+          extraData={reRenderListTrigger}
         />
       </View>
     );
