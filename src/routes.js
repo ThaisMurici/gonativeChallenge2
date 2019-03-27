@@ -21,6 +21,7 @@ const Routes = createAppContainer(
         headerTitleStyle: {
           fontWeight: 'bold',
         },
+        headerBackTitle: null,
       },
     },
   ),
